@@ -40,7 +40,7 @@ train_df = pd.DataFrame([
 test_df = pd.DataFrame([
     "All three broke within two months of use.",
     "The device worked for a long time, can't say anything bad.",
-    "Just a random line of text."
+    "Just a random line of text.",
     "三个都在使用两个月内坏了。",
     "这个设备用了很长时间，说不出什么缺点。",
     "只是一句随机的文本。"
