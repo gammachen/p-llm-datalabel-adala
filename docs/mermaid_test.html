@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mermaid Syntax Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+</head>
+<body>
+    <h1>Mermaid语法验证</h1>
+    
+    <h2>测试1: 类图</h2>
+    <div class="mermaid">
+        classDiagram
+            class Agent {
+                -environment Environment
+                -skills SkillSet
+                -memory Memory
+                -runtimes Dict~str, Runtime~
+                +run(input runtime **kwargs) InternalDataFrame
+                +arun(input runtime) InternalDataFrame
+                +learn() void
+            }
+            
+            class Environment {
+                <<abstract>>
+                +initialize() void
+                +get_data_batch(batch_size) InternalDataFrame
+            }
+            
+            Agent --> Environment
+    </div>
+    
+    <h2>测试2: 流程图</h2>
+    <div class="mermaid">
+        flowchart TD
+            Start([Start]) --> Process[Process Data]
+            Process --> Check{Check Result}
+            Check -->|Success| End([End])
+            Check -->|Failure| Retry[Retry]
+            Retry --> Process
+    </div>
+    
+    <h2>测试3: 时序图</h2>
+    <div class="mermaid">
+        sequenceDiagram
+            participant User
+            participant Agent
+            participant System
+            
+            User->>Agent: send request
+            Agent->>System: process data
+            System-->>Agent: return result
+            Agent-->>User: send response
+    </div>
+
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default'
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mermaid 语法验证</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .chart {
+            margin: 20px 0;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 5px;
+        }
+        .error {
+            color: red;
+            background: #ffebee;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .success {
+            color: green;
+            background: #e8f5e8;
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Mermaid 语法验证测试</h1>
+        
+        <h2>1. 修复后的类图</h2>
+        <div class="chart">
+            <div class="mermaid">
+                classDiagram
+                    class Skill {
+                        <<abstract>>
+                        +str name
+                        +str instructions
+                        +str input_template
+                        +str output_template
+                        +apply(input, runtime)
+                        +improve(predictions, feedback, runtime)
+                    }
+
+                    class TransformSkill {
+                        <<abstract>>
+                        +apply(input, runtime) InternalDataFrame
+                        +aapply(input, runtime) InternalDataFrame
+                        +improve(predictions, feedback, runtime)
+                    }
+
+                    class ClassificationSkill {
+                        +str name
+                        +str instructions
+                        +str input_template
+                        +str output_template
+                        +validate_response_model(response_model)
+                    }
+
+                    Skill <|-- TransformSkill : 继承
+                    TransformSkill <|-- ClassificationSkill : 实现
+            </div>
+        </div>
+
+        <h2>2. 修复后的流程图</h2>
+        <div class="chart">
+            <div class="mermaid">
+                flowchart TD
+                    Start([开始]) --> Init[ClassificationSkill初始化]
+                    Init --> LabelsCheck{提供labels?}
+                    LabelsCheck -->|是| BuildSchema[构建field_schema]
+                    LabelsCheck -->|否| SchemaCheck{提供field_schema?}
+                    BuildSchema --> SetEnum[设置predictions字段枚举]
+                    SchemaCheck -->|是| UseCustom[使用自定义schema]
+                    SchemaCheck -->|否| Error[配置错误]
+                    SetEnum --> Validate[验证响应模型]
+                    UseCustom --> Validate
+                    Error --> Fail([初始化失败])
+                    Validate --> Success([初始化成功])
+            </div>
+        </div>
+
+        <h2>3. 修复后的时序图</h2>
+        <div class="chart">
+            <div class="mermaid">
+                sequenceDiagram
+                    participant Client
+                    participant ClassificationSkill
+                    participant Runtime
+                    participant LLM
+
+                    Client->>ClassificationSkill: apply(input_df, runtime)
+                    ClassificationSkill->>Runtime: batch_to_batch()
+                    Runtime->>Runtime: 构建prompt模板
+                    Runtime->>LLM: 批量处理请求
+                    LLM-->>Runtime: 分类结果
+                    Runtime-->>ClassificationSkill: 标注数据框
+                    ClassificationSkill-->>Client: 返回结果
+            </div>
+        </div>
+
+        <div id="status"></div>
+    </div>
+
+    <script>
+        // 初始化Mermaid
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true
+            }
+        });
+
+        // 检查渲染状态
+        setTimeout(() => {
+            const charts = document.querySelectorAll('.mermaid');
+            const statusDiv = document.getElementById('status');
+            
+            let successCount = 0;
+            charts.forEach((chart, index) => {
+                if (chart.querySelector('svg')) {
+                    successCount++;
+                }
+            });
+            
+            if (successCount === charts.length) {
+                statusDiv.innerHTML = '<div class="success">✅ 所有Mermaid图表渲染成功！</div>';
+            } else {
+                statusDiv.innerHTML = '<div class="error">❌ 部分图表渲染失败</div>';
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
